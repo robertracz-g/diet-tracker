@@ -67,17 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayFoodItems = async (date) => {
         foodListContainer.innerHTML = '';
         const foodItems = await storage.get('foodItems') || [];
-        const itemsToDisplay = date ? foodItems.filter(item => item.date === date) : [];
 
-        itemsToDisplay.forEach(item => {
-            const foodItemElement = document.createElement('div');
-            foodItemElement.innerHTML = `
-                <strong>${item.name}</strong> - ${item.calories} calories (${item.category})
-            `;
-            // TODO: Add edit and delete buttons for each food item.
-            // These buttons would call functions to update or remove the item from storage
-            // and then re-render the display.
-            foodListContainer.appendChild(foodItemElement);
+        foodItems.forEach((item, index) => {
+            if (!date || item.date === date) {
+                const foodItemElement = document.createElement('div');
+                foodItemElement.setAttribute('data-id', index);
+                foodItemElement.innerHTML = `
+                    <strong>${item.name}</strong> - ${item.calories} calories (${item.category})
+                    <button class="edit-btn" data-id="${index}">Edit</button>
+                    <button class="delete-btn" data-id="${index}">Delete</button>
+                `;
+                foodListContainer.appendChild(foodItemElement);
+            }
         });
     };
 
@@ -112,6 +113,61 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayCell = event.target.closest('td');
         if (dayCell && dayCell.dataset.date) {
             displayFoodItems(dayCell.dataset.date);
+        }
+    });
+
+    foodListContainer.addEventListener('click', async (event) => {
+        if (event.target.classList.contains('delete-btn')) {
+            const foodId = parseInt(event.target.getAttribute('data-id'), 10);
+            let foodItems = await storage.get('foodItems') || [];
+            const date = foodItems[foodId].date;
+            foodItems.splice(foodId, 1);
+            await storage.save('foodItems', foodItems);
+            displayFoodItems(date);
+            renderCalendar(new Date(date));
+        } else if (event.target.classList.contains('edit-btn')) {
+            const foodId = parseInt(event.target.getAttribute('data-id'), 10);
+            let foodItems = await storage.get('foodItems') || [];
+            const foodItem = foodItems[foodId];
+            const foodItemElement = event.target.closest('div[data-id]');
+
+            foodItemElement.innerHTML = `
+                <input type="text" value="${foodItem.name}" class="edit-name">
+                <input type="number" value="${foodItem.calories}" class="edit-calories">
+                <select class="edit-category">
+                    <option value="fish" ${foodItem.category === 'fish' ? 'selected' : ''}>Fish</option>
+                    <option value="meat" ${foodItem.category === 'meat' ? 'selected' : ''}>Meat</option>
+                    <option value="veggies" ${foodItem.category === 'veggies' ? 'selected' : ''}>Veggies</option>
+                    <option value="sugar" ${foodItem.category === 'sugar' ? 'selected' : ''}>Sugar</option>
+                    <option value="alcohol" ${foodItem.category === 'alcohol' ? 'selected' : ''}>Alcohol</option>
+                </select>
+                <button class="save-btn" data-id="${foodId}">Save</button>
+                <button class="cancel-btn" data-id="${foodId}">Cancel</button>
+            `;
+        } else if (event.target.classList.contains('save-btn')) {
+            const foodId = parseInt(event.target.getAttribute('data-id'), 10);
+            const foodItemElement = event.target.closest('div[data-id]');
+            const newName = foodItemElement.querySelector('.edit-name').value;
+            const newCalories = parseInt(foodItemElement.querySelector('.edit-calories').value, 10);
+            const newCategory = foodItemElement.querySelector('.edit-category').value;
+
+            let foodItems = await storage.get('foodItems') || [];
+            const date = foodItems[foodId].date;
+            foodItems[foodId] = {
+                name: newName,
+                calories: newCalories,
+                category: newCategory,
+                date: date
+            };
+
+            await storage.save('foodItems', foodItems);
+            displayFoodItems(date);
+            renderCalendar(new Date(date));
+        } else if (event.target.classList.contains('cancel-btn')) {
+            const foodId = parseInt(event.target.getAttribute('data-id'), 10);
+            let foodItems = await storage.get('foodItems') || [];
+            const date = foodItems[foodId].date;
+            displayFoodItems(date);
         }
     });
 
