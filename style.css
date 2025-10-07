@@ -1,0 +1,33 @@
+body {
+    font-family: sans-serif;
+}
+
+#calendar-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#calendar-container th, #calendar-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    vertical-align: top;
+    height: 80px;
+}
+
+.day-number {
+    font-weight: bold;
+}
+
+.calories {
+    font-size: 0.8em;
+    color: #555;
+}
+
+.icons span {
+    font-size: 1.2em;
+}
+
+#calendar-container th {
+    background-color: #f2f2f2;
+}
