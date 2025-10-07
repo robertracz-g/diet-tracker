@@ -3,6 +3,7 @@
 // All operations should be async.
 
 const storage = {
+    // TODO: Implement a function to export data to CSV or PDF.
     async save(key, data) {
         return new Promise((resolve) => {
             localStorage.setItem(key, JSON.stringify(data));

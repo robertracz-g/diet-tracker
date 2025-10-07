@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // TODO: Add search functionality to filter the calendar or food list.
+    // TODO: Implement user profiles and settings (e.g., daily calorie goals).
     const addFoodForm = document.getElementById('add-food-form');
     const foodListContainer = document.getElementById('food-list');
     const calendarContainer = document.getElementById('calendar-container');
@@ -11,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alcohol: '🍷'
     };
 
+    // TODO: Add nutrition data visualization (e.g., charts for macros).
     const renderCalendar = async (date) => {
         calendarContainer.innerHTML = '';
         const month = date.getMonth();
@@ -71,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
             foodItemElement.innerHTML = `
                 <strong>${item.name}</strong> - ${item.calories} calories (${item.category})
             `;
+            // TODO: Add edit and delete buttons for each food item.
+            // These buttons would call functions to update or remove the item from storage
+            // and then re-render the display.
             foodListContainer.appendChild(foodItemElement);
         });
     };
